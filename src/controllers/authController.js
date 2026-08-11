@@ -46,3 +46,29 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.me = async (req, res) => {
+  // Return the payload data that was attached to req.user by the authenticate middleware
+  // We can fetch fresh user data from DB if we want, but returning the token payload
+  // is sufficient to verify the flow works. Let's fetch fresh data to be thorough.
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error('Me endpoint error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
