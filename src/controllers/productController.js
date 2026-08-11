@@ -203,7 +203,7 @@ exports.recordStockMovement = async (req, res) => {
           quantityChanged,
           movementType,
           reason,
-          createdBy: req.user.id
+          createdBy: req.user.userId
         }
       });
 
