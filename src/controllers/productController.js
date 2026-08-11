@@ -216,3 +216,33 @@ exports.recordStockMovement = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while recording stock movement' });
   }
 };
+
+exports.listStockMovements = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    
+    const skip = (page - 1) * limit;
+
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const [data, total] = await Promise.all([
+      prisma.stockMovement.findMany({
+        where: { productId: id },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.stockMovement.count({ where: { productId: id } })
+    ]);
+
+    res.status(200).json({ data, total, page, limit });
+  } catch (error) {
+    console.error('List stock movements error:', error);
+    res.status(500).json({ error: 'Internal server error while listing stock movements' });
+  }
+};
