@@ -1,25 +1,30 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 // Create the AuthContext
 const AuthContext = createContext();
 
 // Provide Auth state to the app
 export const AuthProvider = ({ children }) => {
-  // Store user and token in memory only for now (as requested for Phase 6a)
-  // This means a page refresh will log the user out.
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(() => sessionStorage.getItem('token') || null);
+  const [user, setUser] = useState(() => {
+    const savedUser = sessionStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   // Login function called after successful API response
   const login = (newToken, userData) => {
     setToken(newToken);
     setUser(userData);
+    sessionStorage.setItem('token', newToken);
+    sessionStorage.setItem('user', JSON.stringify(userData));
   };
 
-  // Logout function to clear memory
+  // Logout function to clear memory and storage
   const logout = () => {
     setToken(null);
     setUser(null);
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   };
 
   return (
