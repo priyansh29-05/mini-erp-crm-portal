@@ -2,19 +2,22 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
 
 function App() {
   return (
     <Routes>
-      {/* Public Route */}
       <Route path="/login" element={<Login />} />
 
-      {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/customers" element={<div className="p-8 text-center text-gray-500">Customers coming soon</div>} />
+          <Route path="/products" element={<div className="p-8 text-center text-gray-500">Products coming soon</div>} />
+          <Route path="/challans" element={<div className="p-8 text-center text-gray-500">Challans coming soon</div>} />
+        </Route>
       </Route>
 
-      {/* Catch all route - redirect to dashboard (which will redirect to login if not authenticated) */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
