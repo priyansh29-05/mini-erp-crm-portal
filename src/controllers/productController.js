@@ -162,3 +162,57 @@ exports.getProduct = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while fetching product' });
   }
 };
+
+exports.recordStockMovement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantityChanged, movementType, reason } = req.body;
+
+    if (quantityChanged === undefined || quantityChanged <= 0 || typeof quantityChanged !== 'number') {
+      return res.status(400).json({ error: 'quantityChanged must be a positive number' });
+    }
+    if (movementType !== 'IN' && movementType !== 'OUT') {
+      return res.status(400).json({ error: 'movementType must be exactly IN or OUT' });
+    }
+    if (!reason || typeof reason !== 'string') {
+      return res.status(400).json({ error: 'reason must be a non-empty string' });
+    }
+
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    if (movementType === 'OUT' && product.currentStock < quantityChanged) {
+      return res.status(400).json({ error: 'Not enough stock for this OUT movement' });
+    }
+
+    const newStock = movementType === 'IN' 
+      ? product.currentStock + quantityChanged
+      : product.currentStock - quantityChanged;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: { currentStock: newStock }
+      });
+
+      const stockMovement = await tx.stockMovement.create({
+        data: {
+          productId: id,
+          quantityChanged,
+          movementType,
+          reason,
+          createdBy: req.user.id
+        }
+      });
+
+      return { updatedProduct, stockMovement };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Record stock movement error:', error);
+    res.status(500).json({ error: 'Internal server error while recording stock movement' });
+  }
+};
