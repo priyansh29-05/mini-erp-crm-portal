@@ -11,9 +11,11 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const productRoutes = require('./routes/productRoutes');
 
 app.use('/auth', authRoutes);
 app.use('/customers', customerRoutes);
+app.use('/products', productRoutes);
 
 // Health-check endpoint
 // This verifies that the server is running and can connect to the database.
