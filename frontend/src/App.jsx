@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CustomerList from './pages/customers/CustomerList';
 import CustomerForm from './pages/customers/CustomerForm';
+import CustomerDetail from './pages/customers/CustomerDetail';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/customers" element={<CustomerList />} />
           <Route path="/customers/new" element={<CustomerForm />} />
           <Route path="/customers/:id/edit" element={<CustomerForm />} />
+          <Route path="/customers/:id" element={<CustomerDetail />} />
           <Route path="/products" element={<div className="p-8 text-center text-gray-500">Products coming soon</div>} />
           <Route path="/challans" element={<div className="p-8 text-center text-gray-500">Challans coming soon</div>} />
         </Route>
