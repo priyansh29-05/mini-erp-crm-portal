@@ -151,3 +151,113 @@ exports.getChallanById = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while fetching challan' });
   }
 };
+
+exports.confirmChallan = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingChallan = await prisma.challan.findUnique({
+      where: { id }
+    });
+
+    if (!existingChallan) {
+      return res.status(404).json({ error: 'Challan not found' });
+    }
+
+    if (existingChallan.status !== 'DRAFT') {
+      return res.status(400).json({ error: 'Only DRAFT challans can be confirmed' });
+    }
+
+    // Execute the transaction
+    const updatedChallan = await prisma.$transaction(async (tx) => {
+      // 1. Re-fetch challan with items inside transaction
+      const challan = await tx.challan.findUnique({
+        where: { id },
+        include: { challanItems: true }
+      });
+
+      // 2. Fetch all related products to check stock
+      const productIds = challan.challanItems.map(item => item.productId);
+      const products = await tx.product.findMany({
+        where: { id: { in: productIds } }
+      });
+
+      // 3. Check for insufficient stock
+      const shortProducts = [];
+      for (const item of challan.challanItems) {
+        const product = products.find(p => p.id === item.productId);
+        if (product.currentStock < item.quantity) {
+          shortProducts.push(`${product.name} (Short by ${item.quantity - product.currentStock})`);
+        }
+      }
+
+      if (shortProducts.length > 0) {
+        throw new Error(`Insufficient stock for: ${shortProducts.join(', ')}`);
+      }
+
+      // 4. Update stock and create stock movements
+      for (const item of challan.challanItems) {
+        const product = products.find(p => p.id === item.productId);
+        
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { currentStock: product.currentStock - item.quantity }
+        });
+
+        await tx.stockMovement.create({
+          data: {
+            productId: item.productId,
+            quantityChanged: item.quantity,
+            movementType: 'OUT',
+            reason: `Challan ${challan.challanNumber} confirmed`,
+            createdBy: req.user.userId
+          }
+        });
+      }
+
+      // 5. Update challan status
+      return tx.challan.update({
+        where: { id },
+        data: { status: 'CONFIRMED' },
+        include: { challanItems: true }
+      });
+    });
+
+    res.status(200).json(updatedChallan);
+  } catch (error) {
+    if (error.message.startsWith('Insufficient stock')) {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error('Error confirming challan:', error);
+    res.status(500).json({ error: 'Internal server error while confirming challan' });
+  }
+};
+
+exports.cancelChallan = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingChallan = await prisma.challan.findUnique({
+      where: { id }
+    });
+
+    if (!existingChallan) {
+      return res.status(404).json({ error: 'Challan not found' });
+    }
+
+    if (existingChallan.status !== 'DRAFT') {
+      return res.status(400).json({ error: 'Only DRAFT challans can be cancelled' });
+    }
+
+    const cancelledChallan = await prisma.challan.update({
+      where: { id },
+      data: { status: 'CANCELLED' },
+      include: { challanItems: true }
+    });
+
+    res.status(200).json(cancelledChallan);
+  } catch (error) {
+    console.error('Error cancelling challan:', error);
+    res.status(500).json({ error: 'Internal server error while cancelling challan' });
+  }
+};

@@ -10,5 +10,7 @@ router.use(authenticate);
 router.post('/', challanController.createChallan);
 router.get('/', challanController.getChallans);
 router.get('/:id', challanController.getChallanById);
+router.post('/:id/confirm', challanController.confirmChallan);
+router.post('/:id/cancel', challanController.cancelChallan);
 
 module.exports = router;
