@@ -123,3 +123,50 @@ exports.listCustomers = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while listing customers' });
   }
 };
+
+exports.getCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const customer = await prisma.customer.findUnique({ where: { id } });
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error('Get customer error:', error);
+    res.status(500).json({ error: 'Internal server error while fetching customer' });
+  }
+};
+
+exports.addNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { note } = req.body;
+
+    if (!note || typeof note !== 'string') {
+      return res.status(400).json({ error: 'Note is required and must be a string' });
+    }
+
+    const customer = await prisma.customer.findUnique({ where: { id } });
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    const timestamp = new Date().toISOString().slice(0, 16).replace('T', ' '); // format: YYYY-MM-DD HH:mm
+    const formattedNote = `[${timestamp}] ${note}\n`;
+    
+    const newNotes = customer.notes 
+      ? formattedNote + customer.notes 
+      : formattedNote;
+
+    const updatedCustomer = await prisma.customer.update({
+      where: { id },
+      data: { notes: newNotes }
+    });
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    console.error('Add note error:', error);
+    res.status(500).json({ error: 'Internal server error while adding note' });
+  }
+};
