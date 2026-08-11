@@ -1,5 +1,5 @@
 const express = require('express');
-const { createCustomer } = require('../controllers/customerController');
+const { createCustomer, updateCustomer } = require('../controllers/customerController');
 const authenticate = require('../middleware/authenticate');
 
 const router = express.Router();
@@ -8,5 +8,6 @@ const router = express.Router();
 router.use(authenticate);
 
 router.post('/', createCustomer);
+router.put('/:id', updateCustomer);
 
 module.exports = router;
