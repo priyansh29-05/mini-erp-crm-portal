@@ -31,14 +31,14 @@ model Customer {
   id           String         @id @default(uuid()) @db.Uuid
   name         String
   mobile       String
-  email        String?
-  businessName String?
+  email        String
+  businessName String
   gstNumber    String?
   customerType CustomerType
   address      String
   status       CustomerStatus
-  followUpDate DateTime?
-  notes        String?
+  followUpDate DateTime
+  notes        String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -65,7 +65,7 @@ model Product {
   unitPrice     Decimal
   currentStock  Int      @default(0)
   minStockAlert Int      @default(0)
-  location      String?
+  location      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
