@@ -84,3 +84,81 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while updating product' });
   }
 };
+
+exports.listProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const search = req.query.search || '';
+    const category = req.query.category;
+    const lowStock = req.query.lowStock === 'true';
+
+    const skip = (page - 1) * limit;
+
+    const where = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { sku: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+    if (category) {
+      where.category = category;
+    }
+
+    const [allProducts, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.product.count({ where })
+    ]);
+
+    let data = allProducts;
+    
+    if (lowStock) {
+      data = data.filter(p => p.currentStock <= p.minStockAlert);
+    }
+
+    // Paginate manually after filter if lowStock is applied, otherwise we could just query DB
+    // However, Prisma doesn't directly support comparing two columns in `where` easily without raw query,
+    // so filtering in JS is okay for this mini-erp. Let's adjust total if we filtered in JS.
+    if (lowStock) {
+      // re-calculate pagination after manual JS filter
+      const paginatedData = data.slice(skip, skip + limit).map(p => ({
+        ...p,
+        isLowStock: true
+      }));
+      return res.status(200).json({ data: paginatedData, total: data.length, page, limit });
+    }
+
+    // Apply isLowStock map for normal flow
+    const paginatedData = data.slice(skip, skip + limit).map(p => ({
+      ...p,
+      isLowStock: p.currentStock <= p.minStockAlert
+    }));
+
+    res.status(200).json({ data: paginatedData, total, page, limit });
+  } catch (error) {
+    console.error('List products error:', error);
+    res.status(500).json({ error: 'Internal server error while listing products' });
+  }
+};
+
+exports.getProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.status(200).json({
+      ...product,
+      isLowStock: product.currentStock <= product.minStockAlert
+    });
+  } catch (error) {
+    console.error('Get product error:', error);
+    res.status(500).json({ error: 'Internal server error while fetching product' });
+  }
+};

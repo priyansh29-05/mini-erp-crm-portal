@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProduct, updateProduct } = require('../controllers/productController');
+const { createProduct, updateProduct, listProducts, getProduct } = require('../controllers/productController');
 const authenticate = require('../middleware/authenticate');
 
 const router = express.Router();
@@ -8,6 +8,8 @@ const router = express.Router();
 router.use(authenticate);
 
 router.post('/', createProduct);
+router.get('/', listProducts);
+router.get('/:id', getProduct);
 router.put('/:id', updateProduct);
 
 module.exports = router;
