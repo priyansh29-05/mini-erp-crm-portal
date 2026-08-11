@@ -8,6 +8,10 @@ const prisma = new PrismaClient();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+// Routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
+
 // Health-check endpoint
 // This verifies that the server is running and can connect to the database.
 app.get('/health', async (req, res) => {
