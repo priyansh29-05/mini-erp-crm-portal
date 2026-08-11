@@ -1,5 +1,5 @@
 const express = require('express');
-const { createCustomer, updateCustomer } = require('../controllers/customerController');
+const { createCustomer, updateCustomer, listCustomers } = require('../controllers/customerController');
 const authenticate = require('../middleware/authenticate');
 
 const router = express.Router();
@@ -8,6 +8,7 @@ const router = express.Router();
 router.use(authenticate);
 
 router.post('/', createCustomer);
+router.get('/', listCustomers);
 router.put('/:id', updateCustomer);
 
 module.exports = router;

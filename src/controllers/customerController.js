@@ -85,3 +85,41 @@ exports.updateCustomer = async (req, res) => {
     res.status(500).json({ error: 'Internal server error while updating customer' });
   }
 };
+
+exports.listCustomers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const search = req.query.search || '';
+    const status = req.query.status;
+    const customerType = req.query.customerType;
+
+    const skip = (page - 1) * limit;
+
+    const where = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { mobile: { contains: search, mode: 'insensitive' } },
+        { businessName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+    if (status) where.status = status;
+    if (customerType) where.customerType = customerType;
+
+    const [data, total] = await Promise.all([
+      prisma.customer.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.customer.count({ where })
+    ]);
+
+    res.status(200).json({ data, total, page, limit });
+  } catch (error) {
+    console.error('List customers error:', error);
+    res.status(500).json({ error: 'Internal server error while listing customers' });
+  }
+};
