@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  stockMovements StockMovement[]
+  challans       Challan[]
+}
+
+enum Role {
+  ADMIN
+  SALES
+  WAREHOUSE
+  ACCOUNTS
+}
+
+model Customer {
+  id           String         @id @default(uuid()) @db.Uuid
+  name         String
+  mobile       String
+  email        String?
+  businessName String?
+  gstNumber    String?
+  customerType CustomerType
+  address      String
+  status       CustomerStatus
+  followUpDate DateTime?
+  notes        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  challans     Challan[]
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  DISTRIBUTOR
+}
+
+enum CustomerStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+}
+
+model Product {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  sku           String   @unique
+  category      String
+  unitPrice     Decimal
+  currentStock  Int      @default(0)
+  minStockAlert Int      @default(0)
+  location      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  stockMovements StockMovement[]
+  challanItems   ChallanItem[]
+}
+
+model StockMovement {
+  id              String       @id @default(uuid()) @db.Uuid
+  productId       String       @db.Uuid
+  quantityChanged Int
+  movementType    MovementType
+  reason          String
+  createdBy       String       @db.Uuid
+  createdAt       DateTime     @default(now())
+
+  product         Product      @relation(fields: [productId], references: [id])
+  user            User         @relation(fields: [createdBy], references: [id])
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+model Challan {
+  id            String        @id @default(uuid()) @db.Uuid
+  challanNumber String        @unique
+  customerId    String        @db.Uuid
+  totalQuantity Int
+  status        ChallanStatus
+  createdBy     String        @db.Uuid
+  createdAt     DateTime      @default(now())
+
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  user          User          @relation(fields: [createdBy], references: [id])
+  challanItems  ChallanItem[]
+}
+
+enum ChallanStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+model ChallanItem {
+  id                  String   @id @default(uuid()) @db.Uuid
+  challanId           String   @db.Uuid
+  productId           String   @db.Uuid
+  productNameSnapshot String
+  unitPriceSnapshot   Decimal
+  quantity            Int
+
+  challan             Challan  @relation(fields: [challanId], references: [id])
+  product             Product  @relation(fields: [productId], references: [id])
+}
