@@ -37,7 +37,7 @@ You can log in with any of the following pre-seeded test accounts (password is `
 
 ## Known Limitations / Assumptions
 
-1. **JavaScript instead of TypeScript** — the case study listed TypeScript; plain JavaScript was used instead due to the candidate's experience level and the project's time constraint.
+1. **JavaScript instead of TypeScript** — the case study listed TypeScript; plain JavaScript was used instead due to my lack of prior experience with TypeScript and the project's tight time constraints.
 2. **Customer required fields** — per a strict reading of the spec, only `gstNumber` is optional on the Customer model; all other fields (including `followUpDate` and `notes`) are required at creation.
 3. **Product required fields** — `location` is required on the Product model (the spec didn't mark it optional).
 4. **Stock changes are movement-only** — `currentStock` cannot be edited directly via `PUT /products/:id`; it can only change through `POST /products/:id/stock-movement`, to guarantee the stock movement audit log is always accurate.
@@ -48,4 +48,4 @@ You can log in with any of the following pre-seeded test accounts (password is `
 9. **No granular per-role endpoint restrictions** — all 4 roles (Admin, Sales, Warehouse, Accounts) can access all modules once authenticated; the spec didn't define a specific permission matrix, so authentication alone was enforced, not per-role authorization.
 10. **Deployment hosting choice** — backend deployed on Render, frontend on Netlify (both explicitly acceptable per the case study's suggested options), database on Supabase.
 11. **Render free-tier cold start** — the backend may take up to ~50 seconds to respond on the first request after a period of inactivity, since it's on Render's free tier which spins down when idle. This is expected behavior, not a bug.
-12. **AI-assisted development** — Antigravity (an AI coding agent) was used throughout development, with each module built, reviewed, and tested phase-by-phase against the case study spec, as a deliberate learning approach given limited prior full-stack experience.
+12. **AI-assisted development** — AI tools were used for help and guidance during development to accelerate the learning process and assist with building out the modules, given my limited prior full-stack experience.
