@@ -113,7 +113,12 @@ exports.getChallans = async (req, res) => {
         where,
         skip,
         take: limitNum,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: {
+          customer: {
+            select: { name: true, email: true, mobile: true }
+          }
+        }
       }),
       prisma.challan.count({ where })
     ]);
@@ -137,7 +142,10 @@ exports.getChallanById = async (req, res) => {
     const challan = await prisma.challan.findUnique({
       where: { id },
       include: {
-        challanItems: true
+        challanItems: true,
+        customer: {
+          select: { name: true, email: true, mobile: true, address: true, businessName: true }
+        }
       }
     });
 
