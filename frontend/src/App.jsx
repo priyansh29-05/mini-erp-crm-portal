@@ -8,6 +8,7 @@ import ProductList from './pages/products/ProductList';
 import ProductForm from './pages/products/ProductForm';
 import ProductDetail from './pages/products/ProductDetail';
 import ChallanList from './pages/challans/ChallanList';
+import ChallanForm from './pages/challans/ChallanForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/products/:id/edit" element={<ProductForm />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/challans" element={<ChallanList />} />
+          <Route path="/challans/new" element={<ChallanForm />} />
         </Route>
       </Route>
 
