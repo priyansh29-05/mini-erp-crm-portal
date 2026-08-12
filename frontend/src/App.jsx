@@ -7,6 +7,7 @@ import CustomerDetail from './pages/customers/CustomerDetail';
 import ProductList from './pages/products/ProductList';
 import ProductForm from './pages/products/ProductForm';
 import ProductDetail from './pages/products/ProductDetail';
+import ChallanList from './pages/challans/ChallanList';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -26,7 +27,7 @@ function App() {
           <Route path="/products/new" element={<ProductForm />} />
           <Route path="/products/:id/edit" element={<ProductForm />} />
           <Route path="/products/:id" element={<ProductDetail />} />
-          <Route path="/challans" element={<div className="p-8 text-center text-gray-500">Challans coming soon</div>} />
+          <Route path="/challans" element={<ChallanList />} />
         </Route>
       </Route>
 
