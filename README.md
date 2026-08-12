@@ -7,11 +7,11 @@ A full-stack operations portal to manage customers, product inventory, and sales
 - **Backend API (Render):** https://mini-erp-crm-portal-bvdn.onrender.com
 
 ## Test Credentials
-You can log in with any of the following pre-seeded test accounts (password is `Admin@123` for all):
-- **Admin:** `admin@test.com`
-- **Sales:** `sales@test.com`
-- **Warehouse:** `warehouse@test.com`
-- **Accounts:** `accounts@test.com`
+You can log in with any of the following pre-seeded test accounts:
+- **Admin:** `admin@test.com` / `Admin@123`
+- **Sales:** `sales@test.com` / `Sales@123`
+- **Warehouse:** `warehouse@test.com` / `Warehouse@123`
+- **Accounts:** `accounts@test.com` / `Accounts@123`
 
 ## How to Run Locally
 
@@ -22,11 +22,14 @@ You can log in with any of the following pre-seeded test accounts (password is `
 ### Backend Setup
 1. Open a terminal in the root directory.
 2. Run `npm install` to install backend dependencies.
-3. Copy `.env.example` to `.env` and fill in your `DATABASE_URL` and `JWT_SECRET`.
-4. Run `npx prisma db push` to sync the database schema.
+3. Copy `.env.example` to `.env` and fill in your `DATABASE_URL`, `DIRECT_URL`, and `JWT_SECRET` (Supabase requires both pooled and direct URLs).
+4. Run `npx prisma migrate deploy` to apply migrations to the database.
 5. Run `npx prisma generate` to generate the Prisma client.
 6. Run `npm run seed` to seed the database with initial users and data.
 7. Run `npm start` to start the server (runs on port 3000 by default).
+
+### API Documentation
+A comprehensive Postman collection is included in the repository. You can import `postman_collection.json` (located at the project root) into Postman to test all endpoints. It includes auto-saving tokens for easy authentication.
 
 ### Frontend Setup
 1. Open a new terminal and navigate to the `frontend` directory: `cd frontend`
