@@ -55,8 +55,11 @@ const CustomerList = () => {
       }
 
       const data = await response.json();
+      if (!data || !Array.isArray(data.data)) {
+        throw new Error('Invalid response format from server');
+      }
       setCustomers(data.data);
-      setTotal(data.pagination.total);
+      setTotal(data.total || 0);
     } catch (err) {
       setError(err.message);
     } finally {
