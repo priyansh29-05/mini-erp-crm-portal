@@ -15,9 +15,9 @@ const CustomerForm = () => {
     email: '',
     businessName: '',
     gstNumber: '',
-    customerType: 'Retail',
+    customerType: 'RETAIL',
     address: '',
-    status: 'Lead',
+    status: 'LEAD',
     followUpDate: '',
     notes: '',
   });
@@ -53,9 +53,9 @@ const CustomerForm = () => {
         email: data.email || '',
         businessName: data.businessName || '',
         gstNumber: data.gstNumber || '',
-        customerType: data.customerType || 'Retail',
+        customerType: data.customerType || 'RETAIL',
         address: data.address || '',
-        status: data.status || 'Lead',
+        status: data.status || 'LEAD',
         followUpDate: formattedDate,
         notes: data.notes || '',
       });
@@ -239,9 +239,9 @@ const CustomerForm = () => {
                 onChange={handleChange}
                 className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm bg-white"
               >
-                <option value="Retail">Retail</option>
-                <option value="Wholesale">Wholesale</option>
-                <option value="Distributor">Distributor</option>
+                <option value="RETAIL">Retail</option>
+                <option value="WHOLESALE">Wholesale</option>
+                <option value="DISTRIBUTOR">Distributor</option>
               </select>
             </div>
 
@@ -256,9 +256,9 @@ const CustomerForm = () => {
                 onChange={handleChange}
                 className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm bg-white"
               >
-                <option value="Lead">Lead</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="LEAD">Lead</option>
+                <option value="ACTIVE">Active</option>
+                <option value="INACTIVE">Inactive</option>
               </select>
             </div>
 
