@@ -7,6 +7,16 @@ A full-stack operations portal for managing customer records, product inventory,
 - **Frontend:** https://mini-erp-crm-portal-ui.netlify.app
 - **Backend API:** https://mini-erp-crm-portal-bvdn.onrender.com
 
+## Demo Login
+
+Use this seeded account to explore the public demo:
+
+- **Role:** Admin
+- **Email:** `admin@test.com`
+- **Password:** `Admin@123`
+
+These are public demo credentials, not private account credentials. Use them only with the deployed demo and never reuse this password for a personal or production account. The demo should contain only disposable sample data.
+
 ## Tech Stack
 
 React, Node.js, Express, Prisma, and PostgreSQL (hosted on Supabase).
@@ -30,7 +40,7 @@ Import `postman_collection.json` into Postman to explore the API.
 - The current version authenticates users but does **not** enforce a granular role-to-module permission matrix. Do not treat the demo as production-ready authorization.
 - The deployed backend may take time to wake after inactivity because it uses a free hosting tier.
 
-Use only the seeded demo accounts and disposable demo data on the public deployment. Never place private or production data in the demo.
+Never enter private or production data into the public demo.
 
 ## Author
 
